@@ -1,6 +1,9 @@
 import {Component, OnInit, } from '@angular/core';
-import {DomSanitizer , SafeResourceUrl} from '@angular/platform-browser';
-import {Pipe, PipeTransform} from '@angular/core';
+import {DomSanitizer } from '@angular/platform-browser';
+import { LocationCoordinates } from '../CustomModels/location.model';
+import { GeoCoadingService } from '../CustomServices/GeoCoding.service';
+import { WidgetInjectorService } from '../CustomServices/WidgetInjector.service';
+
 
 
 @Component({
@@ -8,24 +11,28 @@ import {Pipe, PipeTransform} from '@angular/core';
   templateUrl: './widgetdisplay.component.html',
   styleUrls: ['./widgetdisplay.component.css']
 })
-@Pipe({
-  name : 'pipe'
-})
+
 export class WidgetdisplayComponent implements OnInit {
 
-  src: SafeResourceUrl;
-
-  constructor(private dss: DomSanitizer) {
-    this.html = this.dss.bypassSecurityTrustHtml('<iframe \n' +
-      'type="text/html" frameborder="0" \n' +
-      'height="390px" \n' +
-      'width="100%" \n' +
-      'scrolling="no"'+
-      'src="https://darksky.net/widget/graph-bar/42.360082,-71.05888/us12/en.js?width=undefined&title=Full Forecast&textColor=333333&bgColor=FFFFFF&skyColor=undefined&fontFamily=Default&customFont=&units=us&timeColor=333333&tempColor=C7C7C7&currentDetailsOption=true"></iframe>');
-  }
-
+  html : any;
+  loc : LocationCoordinates;
+  
+  constructor(private geoCodingService : GeoCoadingService ,
+              private widgetInjectorService : WidgetInjectorService) {
+                
+      this.geoCodingService.LocationEmmiter.subscribe(
+        (data : LocationCoordinates ) => {
+          console.log('from widgetdisplay - ' + data.city + ' ' + data.latitude + ' '+ data.longitude);
+          this.loc = data;
+          if(this.loc){
+            this.html = this.widgetInjectorService.DoDisplayWidget(this.loc);
+            console.log('onIIT');
+          }
+        }
+      ); 
+    }
 
   ngOnInit() {
-
   }
+
 }

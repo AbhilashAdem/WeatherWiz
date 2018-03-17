@@ -1,4 +1,4 @@
-import {Component, OnInit, } from '@angular/core';
+import {Component, OnInit, Input, AfterContentInit, } from '@angular/core';
 import {DomSanitizer } from '@angular/platform-browser';
 import { LocationCoordinates } from '../CustomModels/location.model';
 import { GeoCoadingService } from '../CustomServices/GeoCoding.service';
@@ -12,10 +12,10 @@ import { WidgetInjectorService } from '../CustomServices/WidgetInjector.service'
   styleUrls: ['./widgetdisplay.component.css']
 })
 
-export class WidgetdisplayComponent implements OnInit {
+export class WidgetdisplayComponent implements OnInit  {
 
   html : any;
-  loc : LocationCoordinates;
+  @Input() loc : LocationCoordinates;
   
   constructor(private geoCodingService : GeoCoadingService ,
               private widgetInjectorService : WidgetInjectorService) {
@@ -33,6 +33,13 @@ export class WidgetdisplayComponent implements OnInit {
     }
 
   ngOnInit() {
+    
   }
 
+  ngOnChanges(){
+    if(this.loc){
+      this.html = this.widgetInjectorService.DoDisplayWidget(this.loc);
+      console.log('onIIT');
+    }
+  }
 }
